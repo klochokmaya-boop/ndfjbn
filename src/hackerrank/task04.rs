@@ -21,3 +21,4 @@ mod tests {
         assert_eq!(grading_students(&input), expected);
     }
 }
+
