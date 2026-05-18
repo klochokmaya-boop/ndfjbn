@@ -1,17 +1,24 @@
-pub fn get_total_x(a: &[i32], b: &[i32]) -> i32 {
-    let min_val = *a.iter().max().unwrap_or(&1);
-    let max_val = *b.iter().min().unwrap_or(&100);
-    let mut count = 0;
+pub fn breaking_records(scores: &[i32]) -> Vec<i32> {
+    if scores.is_empty() {
+        return vec![0, 0];
+    }
 
-    for x in min_val..=max_val {
-        let is_a_factor = a.iter().all(|&ai| x % ai == 0);
-        let is_factor_of_b = b.iter().all(|&bi| bi % x == 0);
+    let mut min_score = scores[0];
+    let mut max_score = scores[0];
+    let mut min_count = 0;
+    let mut max_count = 0;
 
-        if is_a_factor && is_factor_of_b {
-            count += 1;
+    for &score in &scores[1..] {
+        if score > max_score {
+            max_score = score;
+            max_count += 1;
+        } else if score < min_score {
+            min_score = score;
+            min_count += 1;
         }
     }
-    count
+
+    vec![max_count, min_count]
 }
 
 #[cfg(test)]
@@ -19,9 +26,26 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_get_total_x() {
-        let a = vec![2, 4];
-        let b = vec![16, 32, 96];
-        assert_eq!(get_total_x(&a, &b), 3);
+    fn test_sample_0() {
+        let scores = vec![10, 5, 20, 20, 4, 5, 2, 25, 1];
+        assert_eq!(breaking_records(&scores), vec![2, 4]);
+    }
+
+    #[test]
+    fn test_sample_1() {
+        let scores = vec![3, 4, 21, 36, 10, 28, 35, 5, 24, 42];
+        assert_eq!(breaking_records(&scores), vec![4, 0]);
+    }
+
+    #[test]
+    fn test_single_score() {
+        let scores = vec![10];
+        assert_eq!(breaking_records(&scores), vec![0, 0]);
+    }
+
+    #[test]
+    fn test_equal_scores() {
+        let scores = vec![10, 10, 10];
+        assert_eq!(breaking_records(&scores), vec![0, 0]);
     }
 }
